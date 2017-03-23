@@ -1,26 +1,6 @@
 function toggleDone() {
-  var checkbox = this;
-  var tableRow = $(this).parent().parent();
-
-  var todoId = tableRow.data('id');
-  var isCompleted = !tableRow.hasClass("success");
-
-  $.ajax({
-    type: "PUT",
-    url: "/todos/" + todoId + ".json",
-    data: JSON.stringify({
-      todo: { completed: isCompleted }
-    }),
-    contentType: "application/json",
-    dataType: "json"})
-
-    .done(function(data) {
-      console.log(data);
-
-      tableRow.toggleClass("success", data.completed);
-
-      updateCounters();
-    });
+  $(this).parent().parent().toggleClass("success");
+  updateCounters();
 }
 
 function updateCounters() {
@@ -64,13 +44,12 @@ function createTodo(title) {
   dataType: "json"})
 
   .fail(function(error) {
-    console.log(error);
+      console.log(error);
 
-  error_message = error.responseJSON.title[0];
-    showError(error_message);
-  });
+      error_message = error.responseJSON.title[0];
+      showError(error_message);
+    });
 }
-
 function showError(message) {
   var errorHelpBlock = $('<span class="help-block"></span>')
     .attr('id', 'error_message')
@@ -81,6 +60,10 @@ function showError(message) {
     .append(errorHelpBlock);
 }
 
+function resetErrors() {
+  $("#error_message").remove();
+  $("#formgroup-title").removeClass("has-error");
+}
 
 function submitTodo(event) {
   event.preventDefault();
@@ -94,16 +77,6 @@ function cleanUpDoneTodos(event) {
   $.when($(".success").remove())
     .then(updateCounters);
 }
-
-.fail(function(error) {
-      console.log(error);
-
-      error_message = error.responseJSON.title[0];
-      showError(error_message);
-    });
-}
-
-
 
 $(document).ready(function() {
   $("input[type=checkbox]").bind('change', toggleDone);
